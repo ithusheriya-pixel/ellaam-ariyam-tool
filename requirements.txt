@@ -1,0 +1,7 @@
+streamlit
+feedparser
+gspread
+google-genai
+oauth2client
+pillow
+google-api-python-client
