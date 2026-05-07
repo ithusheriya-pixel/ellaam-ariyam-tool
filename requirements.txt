@@ -5,3 +5,4 @@ google-genai
 oauth2client
 pillow
 google-api-python-client
+requests
