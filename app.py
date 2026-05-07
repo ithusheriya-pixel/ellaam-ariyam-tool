@@ -62,18 +62,53 @@ def generate_content(topic):
 # --- 4. UI ---
 st.title("📱 Ellaam Ariyam Content Engine")
 
-if st.button("Check Latest Trends"):
-    trends = get_malayalam_trends()
-    for t in trends:
-        with st.container(border=True):
-            col1, col2 = st.columns([4, 1])
-            col1.write(t)
+# 1. Initialize session state for trends and results
+if 'trends' not in st.session_state:
+    st.session_state['trends'] = []
+if 'results' not in st.session_state:
+    st.session_state['results'] = {} # Stores results for each topic
+
+if st.button("🔍 Scan for New Trends"):
+    with st.spinner("Fetching latest news..."):
+        # This keeps the list in memory even after clicking other buttons
+        st.session_state['trends'] = get_malayalam_trends()
+
+# 2. Display the persistent list
+for i, t in enumerate(st.session_state['trends']):
+    # Each news item gets its own bordered box
+    with st.container(border=True):
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            st.subheader(t)
+            # If this specific title has already been generated, show the result here
+            if t in st.session_state['results']:
+                res = st.session_state['results'][t]
+                st.image(res['image'], caption="Generated Visual")
+                st.info(res['caption'])
+        
+        with col2:
             if is_redundant(t):
-                col2.error("Posted")
+                st.error("Posted")
             else:
-                if col2.button("Generate", key=t):
-                    with st.status("Generating...", expanded=True):
-                        content = generate_content(t)
-                        # The image generation and Drive saving logic goes here
-                        st.write(content)
-                        st.success("Done!")
+                # Clicking this button will NOT clear the other titles
+                if st.button("Generate", key=f"gen_{i}"):
+                    with st.status("🚀 Processing...", expanded=True) as status:
+                        st.write("🧠 Crafting caption...")
+                        content = generate_ai_content(t)
+                        
+                        st.write("🎨 Creating visual...")
+                        img_obj = generate_visual(f"Graphic for: {t}")
+                        
+                        st.write("📁 Saving to Drive & Sheets...")
+                        save_assets(t, content, img_obj)
+                        
+                        # SAVE result to session state so it stays on screen
+                        st.session_state['results'][t] = {
+                            'caption': content,
+                            'image': img_obj
+                        }
+                        status.update(label="✅ Ready!", state="complete")
+                    
+                    # Force a refresh to show the result in the UI
+                    st.rerun()
