@@ -62,7 +62,7 @@ def generate_content(topic):
 st.title("📱 Ellaam Ariyam Content Engine")
 
 if st.button("Check Latest Trends"):
-    trends = get_trends()
+    trends = get_malayalam_trends()
     for t in trends:
         with st.container(border=True):
             col1, col2 = st.columns([4, 1])
