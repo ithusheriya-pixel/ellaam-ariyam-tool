@@ -30,6 +30,7 @@ def get_trends():
     for url in feeds:
         f = feedparser.parse(url)
         titles.extend([e.title for e in f.entries[:8]])
+        st.write(f"DEBUG: Found {len(titles)} titles") # Add this line
     return list(set(titles))
 
 def is_redundant(topic):
