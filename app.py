@@ -54,15 +54,16 @@ def is_redundant(topic):
         return False
 
 def generate_ai_content(topic):
-    """Generates Malayalam caption and image prompt using the 2026 stable model."""
+    """Generates content using the current 2026 stable flagship model."""
     prompt = (
         f"Topic: {topic}. Create a catchy, high-energy Facebook caption in Malayalam "
         f"with 5 trending hashtags. Also, write a detailed image generation prompt "
         f"for a vibrant, eye-catchy graphic that includes the Malayalam text '{topic[:15]}'."
     )
-    # UPDATED: Using gemini-2.5-flash instead of deprecated 1.5-flash
+    
+    # UPDATED: Switching to gemini-3.1-flash-lite for stability
     response = client.models.generate_content(
-        model="gemini-2.5-flash", 
+        model="gemini-3.1-flash-lite", 
         contents=[prompt]
     )
     return response.text
