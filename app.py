@@ -25,12 +25,31 @@ drive_service = build('drive', 'v3', credentials=creds)
 
 # --- 3. CORE LOGIC ---
 def get_trends():
-    feeds = ["https://www.manoramaonline.com/rss/news/latest-news.xml"]
+   """Fetches news with a real-browser header to avoid being blocked."""
+    # Updated 2026 RSS Links
+    feeds = [
+        "https://malayalam.news18.com/rss/latest-news.xml", 
+        "https://www.mathrubhumi.com/rss/latest",
+        "https://timesofindia.indiatimes.com/rssfeeds/2299833.cms" # TOI Malayalam
+    ]
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
     titles = []
     for url in feeds:
-        f = feedparser.parse(url)
-        titles.extend([e.title for e in f.entries[:8]])
-        st.write(f"DEBUG: Found {len(titles)} titles") # Add this line
+        try:
+            # First, fetch the raw XML using requests with headers
+            response = requests.get(url, headers=headers, timeout=10)
+            if response.status_code == 200:
+                # Then, parse that XML data with feedparser
+                feed = feedparser.parse(response.content)
+                for entry in feed.entries[:5]:
+                    titles.append(entry.title)
+        except Exception as e:
+            st.error(f"Error fetching from {url}: {e}")
+            
     return list(set(titles))
 
 def is_redundant(topic):
