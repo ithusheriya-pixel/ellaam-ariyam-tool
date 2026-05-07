@@ -6,6 +6,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import datetime
+import requests
 import io
 from PIL import Image
 
