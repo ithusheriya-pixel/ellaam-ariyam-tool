@@ -24,13 +24,12 @@ gc = gspread.authorize(creds)
 drive_service = build('drive', 'v3', credentials=creds)
 
 # --- 3. CORE LOGIC ---
-def get_trends():
-   """Fetches news with a real-browser header to avoid being blocked."""
-    # Updated 2026 RSS Links
+def get_malayalam_trends():
+    """Fetches news with a real-browser header to avoid being blocked."""
     feeds = [
         "https://malayalam.news18.com/rss/latest-news.xml", 
         "https://www.mathrubhumi.com/rss/latest",
-        "https://timesofindia.indiatimes.com/rssfeeds/2299833.cms" # TOI Malayalam
+        "https://news.google.com/rss?hl=ml&gl=IN&ceid=IN:ml"
     ]
     
     headers = {
@@ -40,10 +39,8 @@ def get_trends():
     titles = []
     for url in feeds:
         try:
-            # First, fetch the raw XML using requests with headers
             response = requests.get(url, headers=headers, timeout=10)
             if response.status_code == 200:
-                # Then, parse that XML data with feedparser
                 feed = feedparser.parse(response.content)
                 for entry in feed.entries[:5]:
                     titles.append(entry.title)
